@@ -39,7 +39,7 @@ const DEFAULT_TIMEOUT_MS = 15_000;
 const DEFAULT_RETRIES = 3;
 const DEFAULT_RETRY_DELAY_MS = 500;
 const DEFAULT_UA =
-  "Mozilla/5.0 (compatible; MeteoraTokenScreener/1.0; +https://github.com/meteora-token-screener)";
+  "Mozilla/5.0 (compatible; meridian-scout/1.0; +https://github.com/rigaz29/meridian-scout)";
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 

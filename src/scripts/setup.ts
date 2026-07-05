@@ -101,7 +101,7 @@ async function main() {
   const section = (title: string) => console.log("\n" + c.bold(c.yellow("▸ " + title)));
 
   try {
-    console.log(c.bold("\n🛠  Meteora DLMM Token Screener — setup\n"));
+    console.log(c.bold("\n🛠  meridian-scout — setup\n"));
     console.log("Paste each value when prompted. Press Enter to skip an optional field or accept a default.\n");
 
     if (!existsSync(envExamplePath)) {
@@ -212,7 +212,7 @@ async function sendTelegramTest(token: string, chatId: string): Promise<void> {
     const bot = new Bot(token);
     await bot.api.sendMessage(
       chatId,
-      "✅ <b>Meteora DLMM Token Screener</b>\nSetup berhasil — bot terhubung ke chat ini.",
+      "✅ <b>meridian-scout</b>\nSetup berhasil — bot terhubung ke chat ini.",
       { parse_mode: "HTML" },
     );
     console.log(c.green("✔ Test message sent — check your Telegram."));

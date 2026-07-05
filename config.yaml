@@ -1,5 +1,5 @@
 # ============================================================================
-# Meteora DLMM Token Screener — tunable rules & thresholds
+# meridian-scout — tunable rules & thresholds
 # ----------------------------------------------------------------------------
 # Everything here can be changed WITHOUT touching the code. Values are validated
 # on startup (see src/config/rules.ts). Secrets/keys live in .env, NOT here.

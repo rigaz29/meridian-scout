@@ -27,7 +27,7 @@ function cronExpr(minutes: number): string {
 }
 
 function logStartupSummary(): void {
-  log.info("Meteora DLMM Token Screener starting");
+  log.info("meridian-scout starting");
   log.info(`  poll interval : ${env.pollIntervalMinutes} min`);
   log.info(`  LLM model     : ${env.llm.model}${env.llm.deepseekApiKey ? " (+ DeepSeek fallback)" : ""}`);
   log.info(`  LLM ready     : ${llmConfigured() ? "yes" : "NO — set OPENROUTER_API_KEY/DEEPSEEK_API_KEY"}`);
