@@ -1,5 +1,8 @@
 # meridian-scout
 
+[![CI](https://github.com/rigaz29/meridian-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/rigaz29/meridian-scout/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A **read-only** screener for [Meteora DLMM](https://www.meteora.ag/) pools on Solana. It polls active/new pools, filters them by quantitative rules, deep-dives the survivors with an LLM, and pushes the results to Telegram.
 
 > **No trading. No wallets. No transactions.** This bot never signs anything or deploys liquidity — it only reads public data, scores it, and notifies you. (Architecture is inspired by [meridian](https://github.com/yunus-0x/meridian), but only the data-fetching patterns were reused — none of the wallet / transaction / LP-position code.)
