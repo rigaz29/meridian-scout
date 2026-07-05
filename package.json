@@ -1,0 +1,43 @@
+{
+  "name": "meridian-scout",
+  "version": "1.0.0",
+  "description": "Read-only screener bot for Meteora DLMM pools: polls pools, filters by quantitative rules, deep-dives candidates with an LLM, and pushes results to Telegram. No trading, no wallets.",
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "tsx src/scripts/setup.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "once": "tsx src/index.ts --once",
+    "test:fetch": "tsx src/scripts/test-fetch.ts",
+    "test:enrich": "tsx src/scripts/test-enrich.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "meteora",
+    "dlmm",
+    "solana",
+    "screener",
+    "telegram",
+    "llm"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "grammy": "^1.32.0",
+    "node-cron": "^3.0.3",
+    "openai": "^4.77.0",
+    "yaml": "^2.6.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

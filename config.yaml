@@ -1,0 +1,98 @@
+# ============================================================================
+# Meteora DLMM Token Screener — tunable rules & thresholds
+# ----------------------------------------------------------------------------
+# Everything here can be changed WITHOUT touching the code. Values are validated
+# on startup (see src/config/rules.ts). Secrets/keys live in .env, NOT here.
+#
+# Thresholds below are ported from the meridian LP-agent's user-config.json:
+# the screener sources "trending" pools (not just brand-new ones) and applies
+# meridian's screening bands. `0`/`null` disables a gate.
+# ============================================================================
+
+fetcher:
+  # The fetcher uses Meteora's Pool Discovery API, which applies the stage-1
+  # bands SERVER-SIDE (plus free safety filters for critically-warned and
+  # single-owner tokens). pageSize = how many already-filtered pools per cycle.
+  pageSize: 50
+  # Window the returned volume/fee/volatility numbers are measured over:
+  # 5m|15m|30m|1h|2h|4h|12h|24h. Scale volume/fee thresholds with this.
+  timeframe: "4h"
+  # How the API ranks/selects pools:
+  #   top      = highest fee/TVL          trending = gaining activity
+  #   new      = recently created         all      = widest net
+  category: "trending"
+  # Optional explicit sort (e.g. "pool_created_at:desc"). Empty = let the
+  # category do the ranking (recommended for trending/top).
+  sortBy: ""
+  # A pool is a candidate only if exactly ONE side is a known quote asset and
+  # the other side is the token being screened.
+  quoteMints:
+    - So11111111111111111111111111111111111111112  # Wrapped SOL
+    - EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v  # USDC
+    - Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB  # USDT
+
+# ---------------------------------------------------------------------------
+# Stage 1 — cheap, Meteora-only bands. Enforced server-side by the discovery
+# API and re-checked locally as a backstop. A pool must pass ALL to be enriched.
+# ---------------------------------------------------------------------------
+stage1:
+  minTvlUsd: 1000               # min pool TVL (USD)
+  maxTvlUsd: 500000             # max pool TVL (USD); 0 = no cap
+  minVolumeUsd: 1000            # min trade volume (USD) over `timeframe`
+  minVolumeToTvlRatio: 0        # vol/TVL activity ratio; 0 = off
+  minFeeTvlRatioPct: 2.5        # fee/active-TVL floor (%) over `timeframe`
+  minMcapUsd: 250000            # min base-token market cap (USD); 0 = off
+  maxMcapUsd: 100000000         # max base-token market cap (USD); 0 = off
+  minHolders: 500               # min base-token holders; 0 = off
+  minOrganicScore: 65           # min Jupiter organic score, base token; 0 = off
+  minQuoteOrganicScore: 60      # min organic score, quote token; 0 = off
+  minBinStep: 80                # min DLMM bin step; 0 = off
+  maxBinStep: 125               # max DLMM bin step; 0 = off
+  minTokenAgeHours: null        # min token age (hours); null = off
+  maxTokenAgeHours: null        # max token age (hours); null = off
+  maxPoolAgeHours: 0            # max POOL age (hours); 0 = off (bias to fresh)
+  maxVolatility: 8              # max pool volatility over `timeframe`; null/0 = off
+  requireMintAuthorityRevoked: true    # reject if token can still mint supply
+  requireFreezeAuthorityRevoked: true  # reject if token can still freeze wallets
+  maxTopHoldersPct: 0           # Meteora top-holder % cap; 0 = off (see stage2)
+  rejectBlacklisted: true       # drop pools flagged is_blacklisted by Meteora
+
+# ---------------------------------------------------------------------------
+# Stage 2 — enrichment-dependent rules (Jupiter + OKX + GMGN). Applied AFTER
+# enrichment. Rules whose required data is unavailable are skipped and logged,
+# never fail the whole pool — enrichment is best-effort.
+# ---------------------------------------------------------------------------
+stage2:
+  requireJupiterListed: true      # token must be resolvable in Jupiter Token API
+  requireJupiterVerified: false   # stricter: require Jupiter isVerified = true
+  maxSlippagePct: 5.0             # Jupiter price impact for the probe swap, in %
+  slippageProbeUsd: 200           # notional USD size for the slippage probe swap
+  maxJupiterOkxPriceDiffPct: 3.0  # |Jup price - OKX price| / mid, in % (if both)
+  minHolders: 0                   # 0 disables (stage1 already gates holders)
+  maxTop10Pct: 60                 # max top-10 concentration % (GMGN/OKX); 0 = off
+  athFilterPct: -20               # require price <= (100+this)% of ATH; null = off
+  maxAthDropPct: 75               # reject if down > this % from ATH; null = off
+
+# ---------------------------------------------------------------------------
+# LLM deep-dive analyzer
+# ---------------------------------------------------------------------------
+analyzer:
+  enabled: true
+  minScoreToNotify: 60   # only tokens scoring >= this get a Telegram alert
+  maxCandidatesPerCycle: 12  # cap LLM calls per cycle (cost control)
+
+# ---------------------------------------------------------------------------
+# Telegram notifier
+# ---------------------------------------------------------------------------
+notifier:
+  maxNotificationsPerCycle: 5  # flood protection
+  meteoraPoolBaseUrl: "https://app.meteora.ag/dlmm"
+  dexscreenerBaseUrl: "https://dexscreener.com/solana"
+
+# ---------------------------------------------------------------------------
+# Blacklists (manual). Any pool whose target token mint or dev address appears
+# here is dropped in stage 1, regardless of metrics.
+# ---------------------------------------------------------------------------
+blacklist:
+  tokenMints: []
+  devAddresses: []
